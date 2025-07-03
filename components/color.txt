@@ -1,0 +1,16 @@
+light theme
+#ffffff-bg
+#FF7700-card bg
+#CC7400-border
+#202020-heading text
+#000000-verse text
+
+dark theme
+#1E1E1E-bb
+#F4A300-card bg
+#D4AF37-border
+#E0E0E0-heading text
+#1A1A1A-verse text
+
+
+#c2c2c2
