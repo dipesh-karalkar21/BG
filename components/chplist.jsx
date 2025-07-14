@@ -91,24 +91,30 @@ const Chplist=()=>{
   const viewed = useSharedValue([])
   fetch=async()=>{
     const bg = await AsyncStorage.getItem('Theme')
-    setTheme(bg)
+    if(bg != null){
+      setTheme(bg)
+    }
+    else{
+      setTheme('Light')
+      AsyncStorage.setItem('Theme',theme)
+    }
+
     const value = await AsyncStorage.getItem('Recent')
     const data = JSON.parse(value)
     if(data == null){
       AsyncStorage.setItem('Recent',JSON.stringify(Chp['1'][0]))
-      setInfo(Chp['1'][0])
+      setInfo(Chp['1'][1])
     }
     else{
       setInfo(data)
     }
   }
 
-
   const showLoader=()=>{
-    setLoader(true)
     const timer = setInterval(()=>{
       setLoader(false)
-    },3000)
+      clearInterval(timer)
+    },2000)
   }
 
   useFocusEffect( 
@@ -116,7 +122,7 @@ const Chplist=()=>{
       console.log('Screen is focused.');
       fetch()
       showLoader()
-      return(()=>{setLoader(true)})
+      return ()=>{}
     }, []));
 
 

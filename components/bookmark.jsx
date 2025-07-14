@@ -58,15 +58,23 @@ const BookMark=()=>{
       console.log('Screen is focused');
       getData(); 
       
-      return () => {setIsFetching(true)};
+      return () => {};
   }, []));
+
+
+  const showLoader=()=>{
+    const timer = setInterval(()=>{
+      setIsFetching(false)
+      clearInterval(timer)
+    },2000)
+  }
 
   async function getData(){
     setData(JSON.parse(await AsyncStorage.getItem('BookMark')))
-    setIsFetching(false)
   }
   useEffect(()=>{
     getData()
+    showLoader()
   },[])
   
   const renderItem =(item)=>{

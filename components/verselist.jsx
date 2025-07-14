@@ -22,7 +22,7 @@ import Loader from "./loader";
 const {width,height} = Dimensions.get('window')
 
 const ListItem=({item,viewed,theme})=>{
-  const navigation = useNavigation()
+  const {navigate} = useNavigation()
   
   const animStyle = useAnimatedStyle(()=>{
     const result = Boolean(viewed.value.find(view=>view.item.verno === item.item.verno))
@@ -35,7 +35,7 @@ const ListItem=({item,viewed,theme})=>{
       return(
         <Animated.View style={[animStyle]} >
           <TouchableOpacity style={[styles.card,{borderBottomColor:theme=="Dark"?"#000000":"#2F2F2F",backgroundColor:theme=="Dark"?"#000000":"#2F2F2F",borderBottomWidth:5,borderRadius:RFValue(25)},]} 
-            onPress={()=>{navigation.navigate("Hverse",{cid:item.item.verno ,chpid : item.item.chp ,theme:theme})}}>
+            onPress={()=>{navigate("Hverse",{cid:item.item.verno ,chpid : item.item.chp ,theme:theme})}}>
             <View style={{backgroundColor:theme=="Dark"?"#F4A300":"#FFA536",borderColor:theme=="Dark"?"#D4AF37":"#CC7400",borderWidth:5,borderRadius:RFValue(15)}} >
               <View style={[styles.sub,{}]}>
                 <Text style={[styles.subText,{color:theme=="Dark"?"#1A1A1A":"#000000",fontSize:RFPercentage(2.2)}]}>{item.item.verno}</Text>
@@ -64,14 +64,13 @@ const Verselist=()=>{
   const showLoader=()=>{
     const timer = setInterval(()=>{
       setLoader(false)
-    },3000)
+      clearInterval(timer)
+    },2000)
   }
 
   useEffect(()=>{
     showLoader()
   })
-
-
 
   const renderItem =(item)=>{
     return(

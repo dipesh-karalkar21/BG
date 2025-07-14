@@ -7,13 +7,8 @@ import {
   Platform,
   StatusBar,
   ScrollView,
-  ImageBackground,
   Dimensions,
   TouchableOpacity,
-  ActivityIndicator,
-  Animated,
-  Easing,
-  Image,
   } from "react-native";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useEffect } from "react";
@@ -33,7 +28,6 @@ const Hverse=()=>{
   var theme = params.theme
   const[chps,setChps] = useState(chplist[chpid])
   const[cid,setCid] = useState(params.cid)
-  const[currently,setCurrently] = useState(cid)
   const[rerender, setRerender] = useState(true)
   const[refreshing,setRefreshing] = useState(false); 
   const[zIndex,setZindex]=useState(2);
@@ -44,9 +38,9 @@ const Hverse=()=>{
   }
 
   const showLoader=()=>{
-    setZindex(2)
     const timer = setInterval(()=>{
       setZindex(0)
+      clearInterval(timer)
     },3000)
   }
 
@@ -161,20 +155,21 @@ const Hverse=()=>{
   },[chpid])
 
   const loadMore =useCallback(()=>{
-    setRefreshing(true)
+    setZindex(2)
     showLoader()
+    setRefreshing(true)
     setTimeout(()=>{
       setChps(chplist[`${parseInt(chpid)+1}`])
       chpid += 1
       setCid(1)
-      setCid(0)
       setRefreshing(false)
     },0)
   },[])
   
   const loadMorePrevious = useCallback(()=>{
-    setRefreshing(true)
+    setZindex(2)
     showLoader()
+    setRefreshing(true)
     setTimeout(()=>{
       setChps(chplist[`${parseInt(chpid)-1}`])
       chpid -= 1
@@ -186,12 +181,12 @@ const Hverse=()=>{
 
   return(
     <View style={{backgroundColor:"black",flex:1}} >
-    <Loader zindex = {zIndex} />
+    <Loader zindex={zIndex} />
     <FlatList
       ref={flatListRef}
       data={chps}
       renderItem={renderItem}
-      style={{zIndex:1,backgroundColor:theme=="Dark"?"#161616":"#efefef"}}
+      style={{zIndex:1,backgroundColor:theme=="Dark"?"#161616":"#efefef",position:"absolute"}}
       horizontal={true}
       ListFooterComponent={ListFooterComponent}
       showsHorizontalScrollIndicator={false}

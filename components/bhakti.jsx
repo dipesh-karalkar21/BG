@@ -20,41 +20,98 @@ const {width,height} = Dimensions.get('window')
 import { RFValue ,RFPercentage} from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+
+const ListItem1 = ({item,viewed,theme})=>{
+    const {navigate} = useNavigation()
+
+    const anim = useAnimatedStyle(()=>{
+        const result = Boolean(viewed.value.find(view=>view.item.id === item.item.id))
+        return {
+            transform:[{scale:withTiming(result ? 1 : 0.6)}],
+            opacity : withTiming(result ? 1 : 0)
+        }
+    })
+
+    if(item.item.id > 0){
+        return(
+            <Animated.View style={[anim]} >
+                <TouchableOpacity style={[styles.card,{marginBottom:RFValue(5),borderBottomColor:theme=="Dark"?"#000000":"#2F2F2F",backgroundColor:theme=="Dark"?"#000000":"#2F2F2F",borderBottomWidth:5,borderRadius:RFValue(25)}]} 
+                onPress={()=>{navigate("Bhakti2",{id:item.item.id,theme:theme,title:item.item.title,name:item.item.name})}}>
+                    <View style={{backgroundColor:theme=="Dark"?"#F4A300":"#FFA536",borderColor:theme=="Dark"?"#D4AF37":"#CC7400",borderWidth:5,borderRadius:RFValue(15)}}>
+                        <View style={[styles.sub,{color:theme=="Dark"?"#1A1A1A":"#000000",justifyContent:"center",alignItems:"center"}]}>
+                            <Text style={[styles.subText,{textAlignVertical:"center",color:theme=="Dark"?"#1A1A1A":"black",height:"100%",fontSize:RFPercentage(2.35)}]}>{item.item.title}</Text>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            </Animated.View>
+        )
+    }
+}
+
+const ListItem2 = ({item,viewed,theme,params})=>{
+    const {navigate} = useNavigation()
+
+    const anim = useAnimatedStyle(()=>{
+        const result = Boolean(viewed.value.find(view=>view.item.id === item.item.id))
+        console.log(result)        
+        return {
+            transform:[{scale:withTiming(result ? 1 : 0.6)}],
+            opacity : withTiming(result ? 1 : 0)
+        }
+    })
+
+    if(item.item.id > 0){
+        return(
+            <Animated.View style={[anim]} >
+                <TouchableOpacity style={[styles.card,{marginBottom:RFValue(5),borderBottomColor:theme=="Dark"?"#000000":"#2F2F2F",backgroundColor:theme=="Dark"?"#000000":"#2F2F2F",borderBottomWidth:5,borderRadius:RFValue(25)}]} 
+                onPress={()=>{navigate("Bhakti3",{theme:theme,name:params.name,id:item.item.id})}}>
+                    <View style={{backgroundColor:theme=="Dark"?"#F4A300":"#FFA536",borderColor:theme=="Dark"?"#D4AF37":"#CC7400",borderWidth:5,borderRadius:RFValue(15)}}>
+                        <View style={styles.sub}>
+                            <Text style={[styles.subText,{textAlignVertical:"center",color:theme=="Dark"?"#1A1A1A":"black",height:"100%",fontSize:RFValue(17)}]}>{item.item.title}</Text>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            </Animated.View>
+        )
+    }
+}
 
 const Bhakti=()=>{
     const {params} = useRoute()
     const {navigate} = useNavigation()
     const[theme,setTheme]=useState(params.theme)
+    const viewed = useSharedValue([])
     const data = [
         {
             "id":"1",
             "name":"Ganesha",
-            "title":"Shri Ganesh",
+            "title":"Śrī Gaṇeśa",
         },
         {
             "id":"2",
             "name":"Shakti",
-            "title":"Devi Adi Shakti",
+            "title":"Devī Ādiśakti",
         },
         {
             "id":"3",
             "name":"Shiva",
-            "title":"Mahadev",
+            "title":"Mahādeva",
         },
         {
             "id":"4",
             "name":"Vishnu",
-            "title":"Shri Hari Vishnu",
+            "title":"Śrī Hari Viṣṇu",
         },
         {
             "id":"5",
             "name":"Datta",
-            "title":"Shri Dattatrey"
+            "title":"Śrī Dattātreya"
         },
         {
             "id":"6",
             "name":"Hanuman",
-            "title":"Shri Hanuman"
+            "title":"Śrī Hanumān"
         },
         {
             "id":"7",
@@ -65,16 +122,9 @@ const Bhakti=()=>{
 
 
     const renderItem =(item)=>{
-        if(item.item.id > 0){return(
-        <TouchableOpacity style={[styles.card,{marginBottom:RFValue(5),borderBottomColor:theme=="Dark"?"#000000":"#2F2F2F",backgroundColor:theme=="Dark"?"#000000":"#2F2F2F",borderBottomWidth:5,borderRadius:RFValue(25)}]} 
-        onPress={()=>{navigate("Bhakti2",{id:item.item.id,theme:theme,title:item.item.title,name:item.item.name})}}>
-            <View style={{backgroundColor:theme=="Dark"?"#F4A300":"#FFA536",borderColor:theme=="Dark"?"#D4AF37":"#CC7400",borderWidth:5,borderRadius:RFValue(15)}}>
-                <View style={[styles.sub,{color:theme=="Dark"?"#1A1A1A":"#000000",justifyContent:"center",alignItems:"center"}]}>
-                    <Text style={[styles.subText,{textAlignVertical:"center",color:theme=="Dark"?"#1A1A1A":"black",height:"100%",fontSize:RFPercentage(2.35)}]}>{item.item.title}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
-        )}
+        return(
+            <ListItem1 item={item} viewed={viewed} theme={theme} />
+        )
     }
     if(1){
         return(
@@ -88,6 +138,9 @@ const Bhakti=()=>{
                     return(
                     <View style={{height:height*0.02}} ></View>
                     )
+                }}
+                onViewableItemsChanged={({viewableItems})=>{
+                    viewed.value = viewableItems
                 }}
                 ListHeaderComponent={()=>{
                     return(
@@ -148,15 +201,15 @@ export const Bhakti2=()=>{
                 },
                 {
                     "id":"2",
-                    "title":"Ganpati Stotram"
+                    "title":"Sankaṣṭanāśanaṁ Śrīgaṇapati Stotram"
                 },
                 {
                     "id":"3",
-                    "title":"Ganesh Panchratna Stotram"
+                    "title":"Śrīgaṇeśapañcaratnastotram"
                 },
                 {
                     "id":"4",
-                    "title":"Atharv Shirsha"
+                    "title":"Śrīgaṇapatyatharvaśīrṣa"
                 }
             ]
         },
@@ -169,27 +222,23 @@ export const Bhakti2=()=>{
                 },
                 {
                     "id":"2",
-                    "title":"Kujika Stotram"
+                    "title":"Śrīkuñjikāstotram"
                 },
                 {
                     "id":"3",
-                    "title":"Shabri Kavach"
+                    "title":"Śrīśābarīkavacam"
                 },
                 {
                     "id":"4",
-                    "title":"Durga Stotram"
+                    "title":"Śrī Durgā Stotram"
                 },
                 {
                     "id":"5",
-                    "title":"Mahishasur Mardini Stotram"
+                    "title":"Śrī Tulajābhavānī Stotram"
                 },
                 {
                     "id":"6",
-                    "title":"Tulja Bhavani Stotram"
-                },
-                {
-                    "id":"7",
-                    "title":"Maha Lakshmi Stotram"
+                    "title":"Śrī Mahālakṣmy aṣṭakam"
                 },
             ]
         },
@@ -202,19 +251,15 @@ export const Bhakti2=()=>{
                 },
                 {
                     "id":"2",
-                    "title":"Shiv Panchakshara Stotram"
+                    "title":"Śrīśivapañcākṣarastotram"
                 },
                 {
                     "id":"3",
-                    "title":"Shiv Tandav Stotram"
+                    "title":"Śrīśivatāṇḍavastotram"
                 },
                 {
                     "id":"4",
-                    "title":"Kalabhairava Asktakam"
-                },
-                {
-                    "id":"5",
-                    "title":"Shiv Chalisa"
+                    "title":"Śrīkālabhairavāṣṭakam"
                 },
             ]
         },
@@ -227,11 +272,11 @@ export const Bhakti2=()=>{
                 },
                 {
                     "id":"2",
-                    "title":"Shri Hari Stotram"
+                    "title":"Śrī Hari Stotram"
                 },
                 {
                     "id":"3",
-                    "title":"Shri Ram Raksha Stotram"
+                    "title":"Śrīrāmarakṣāstotram"
                 },
             ]
         },
@@ -239,20 +284,12 @@ export const Bhakti2=()=>{
             "id":"5",
             "content":[
                 {
-                    "id":"1",
-                    "title":"Mantra"
-                },
-                {
                     "id":"2",
-                    "title":"Tarak Mantra"
-                },
-                {
-                    "id":"3",
-                    "title":"Swami Samarth Stotram"
+                    "title":"Śrīghorakaṣṭoddharaṇastotram"
                 },
                 {
                     "id":"4",
-                    "title":"Siddha Mangal Stotram"
+                    "title":"Śrīsiddhamaṅgalastotram"
                 },
             ]
         },
@@ -260,17 +297,9 @@ export const Bhakti2=()=>{
             "id":"6",
             "content":[
                 {
-                    "id":"1",
-                    "title":"Mantra"
-                },
-                {
                     "id":"2",
-                    "title":"Hanuman Chalisa"
-                },
-                {
-                    "id":"3",
-                    "title":"Maruti Stotram"
-                },
+                    "title":"Śrīhanumāncālīsā"
+                }
             ]
         },
         {
@@ -278,15 +307,17 @@ export const Bhakti2=()=>{
             "content":[
                 {
                     "id":"1",
-                    "title":"Mantra"
+                    "title":"Mantras and Shlokas"
                 },
                 {
                     "id":"2",
-                    "title":"Navagraha Stotram"
+                    "title":"Navagrahastotram"
                 },
             ]
         }
     ]
+
+    const viewed = useSharedValue([])
     const getTheme=async()=>{
         const value =await AsyncStorage.getItem('Theme')
         setTheme(value)
@@ -298,16 +329,9 @@ export const Bhakti2=()=>{
     })
 
     const renderItem =(item)=>{
-        if(item.item.id > 0){return(
-        <TouchableOpacity style={[styles.card,{marginBottom:RFValue(5),borderBottomColor:theme=="Dark"?"#000000":"#2F2F2F",backgroundColor:theme=="Dark"?"#000000":"#2F2F2F",borderBottomWidth:5,borderRadius:RFValue(25)}]} 
-        onPress={()=>{navigate("Bhakti3",{theme:theme,name:params.name,id:item.item.id})}}>
-            <View style={{backgroundColor:theme=="Dark"?"#F4A300":"#FFA536",borderColor:theme=="Dark"?"#D4AF37":"#CC7400",borderWidth:5,borderRadius:RFValue(15)}}>
-                <View style={styles.sub}>
-                    <Text style={[styles.subText,{textAlignVertical:"center",color:theme=="Dark"?"#1A1A1A":"black",height:"100%",fontSize:RFValue(20)}]}>{item.item.title}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
-        )}
+        return(
+            <ListItem2 item={item} viewed={viewed} theme={theme} params={params} />
+        )
     }
     if(theme!=null){
         return(
@@ -332,6 +356,9 @@ export const Bhakti2=()=>{
                 }}
                 keyExtractor={item => item.id}
                 bounces={false}
+                onViewableItemsChanged={({viewableItems})=>{
+                    viewed.value = viewableItems
+                }}
                 initialNumToRender={20}
                 ItemSeparatorComponent={()=>{
                     return(
@@ -368,7 +395,7 @@ export const Bhakti3=()=>{
                 <View style={{height:RFValue(4),width:RFValue(200),alignSelf:"center",margin:RFValue(10),borderRadius:RFValue(100),backgroundColor:theme=="Dark"?"#F4A300":"#FFA536"}} ></View>
                 <Text style={[styles.subText1,{color:theme=="Dark"?"#efefef":"#161616"}]} >{item.item.title}</Text>
                 <View style={{height:RFValue(4),width:RFValue(200),alignSelf:"center",margin:RFValue(10),borderRadius:RFValue(100),backgroundColor:theme=="Dark"?"#F4A300":"#FFA536"}} ></View>
-                <Text style={[styles.subText1,{color:theme=="Dark"?"#efefef":"#161616"}]} >{item.item.content+"\n".repeat(item.item.content.length>600?(((item.item.content.length)/100)-3):2)}</Text>
+                <Text style={[styles.subText1,{color:theme=="Dark"?"#efefef":"#161616"}]} >{item.item.content+"\n\n"}</Text>
             </ScrollView>
         )
     }
